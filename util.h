@@ -13,123 +13,92 @@ void printLines(){
 }
 
 /*
- * buffers area between bottom of screen and display
+ * buffers area between bottom of screen and text
  */
- void buffer(){
-		for(int i=0;i<24;i++){
-			printf("\n");
+void buffer(){
+	for(int i=0;i<24;i++){
+		printf("\n");
+	}
+}
+
+void scoreboard(){
+	
+}
+
+/*
+ * 
+ */
+void printBoard(int size, int* arr[size]){
+
+	printLines();
+
+	//print column numbers
+	int columnNum = 1;
+	printf(" ");
+	for(int i=0;i<size;i++){ // first row of column number digits
+		if(columnNum<100){
+			printf("  ");
+		} else {
+			printf("%d ",columnNum/100%10);   
 		}
- }
- 
- /*
-  * for debug
-  */
- void printArray(int size, int* arr[size+2]){
-	 for(int i=0;i<size+2;i++){
-		 for(int j=0;j<size+2;j++){
-			 printf("%d ",arr[i][j]);
-		 } printf("\n");
-	 }
- }
- 
- /*
-  * 
-  */
- void printBoard16(int size, int* arr[size]){
-	 
- 	printLines();
- 	int columnLetter = 65;
- 	int rowNumber = 1;
- 	
- 	printf("\t\t");
- 	for(int i=0;i<size;i++){  
- 		printf("%c     ",columnLetter);   // prints column letters
-		columnLetter++;
- 	} printf("\n");
- 	
- 	for(int i=0;i<size;i++){
- 		
- 		
- 		printf("\t     _");
- 		for(int j=0;j<size;j++){   // Horizontal line over numbers
- 			printf("______");
- 		}
- 		
- 		printf("\n\t     |");
- 		for(int j=0;j<size;j++){   // Vertical lines above number, below horizontal line
- 			printf("     |");
- 		}
+		columnNum++;
+	} printf("\n ");
+	columnNum=1;
+	for(int i=0;i<size;i++){ // second row of column number digits
+		if(columnNum<10){
+			printf("  ");
+		} else {
+			printf("%d ",columnNum/10%10);   
+		}
+		columnNum++;
+	} printf("\n ");
+	columnNum=1;
+	for(int i=0;i<size;i++){ // third row of column number digits
+		printf("%d ",columnNum%10);  
+		columnNum++;
+	} printf("\n");
 
- 		if(rowNumber<10){
- 			printf("\n\t  %d  |  ",rowNumber);	 // prints row numbers
- 		} else {
- 			printf("\n\t %d  |  ",rowNumber);   // one less space if rowNumber has extra digit
- 		}
- 		rowNumber++;
- 		
- 		//prints board values
- 		for(int j=0;j<size;j++){        
- 			if(arr[i][j]==0) printf(" ");     // empty space
- 			if(arr[i][j]==1) printf("X");     // player 1 space
- 			if(arr[i][j]==2) printf("O");     // player 2 space
- 			printf("  |  ");               // divider 
- 		} 
- 		printf("\n\t     |");
- 		for(int j=0;j<size;j++){ // Vertical lines below number, above horizontal line
- 			printf("     |");
- 		}
- 		printf("\n");
- 	}
- 	printf("\t     _");
- 	for(int i=0;i<size;i++){
- 		printf("______");
- 	}
- }
- 
- /*
-  * 
-  */
- void printBoard26(int size, int* arr[size]){
-	 
- 	printLines();
- 	int columnLetter = 65;
- 	int rowNumber = 1;
- 	
- 	printf("\t    ");
- 	for(int i=0;i<size;i++){  
- 		printf("%c ",columnLetter);   // prints column letters
-		columnLetter++;
- 	} printf("\n");
- 	
- 	printf("\t   _");
- 	for(int i=0;i<size;i++){
- 		printf("__");
- 	} printf("\n");
- 	
- 	for(int i=0;i<size;i++){
- 		
- 		/*
- 		printf("\t   _");
- 		for(int j=0;j<size;j++){   // Horizontal line over numbers
- 			printf("__");
- 		}*/
- 		
+	// vertical line above board	
+	for(int i=0;i<size;i++){
+		printf("__");
+	} printf("_\n");
 
- 		if(rowNumber<10){
- 			printf("\t%d  |",rowNumber);	 // prints row numbers
- 		} else {
- 			printf("\t%d |",rowNumber);   // one less space if rowNumber has extra digit
- 		}
- 		rowNumber++;
- 		
- 		//prints board values
- 		for(int j=0;j<size;j++){        
- 			if(arr[i][j]==0) printf("_");     // empty space
- 			if(arr[i][j]==1) printf("X");     // player 1 space
- 			if(arr[i][j]==2) printf("O");     // player 2 space
- 			printf("|");               // divider 
- 		} 
+	for(int i=0;i<size;i++){
+		printf("|");	 
 
- 		printf("\n");
- 	}
- }
+		//prints board values
+		
+		for(int j=0;j<size;j++){        
+			if(arr[i][j]==0) printf("_");     // empty space
+			if(arr[i][j]==1) printf("X");     // player 1 space
+			if(arr[i][j]==2) printf("O");     // player 2 space
+			printf("|");               // divider 
+		} printf("\n");
+	}
+
+	//print column numbers
+	columnNum = 1;
+	printf(" ");
+	for(int i=0;i<size;i++){ // first row of column number digits
+		if(columnNum<100){
+			printf("  ");
+		} else {
+			printf("%d ",columnNum/100%10);   
+		}
+		columnNum++;
+	} printf("\n ");
+	columnNum=1;
+	for(int i=0;i<size;i++){ // second row of column number digits
+		if(columnNum<10){
+			printf("  ");
+		} else {
+			printf("%d ",columnNum/10%10);   
+		}
+		columnNum++;
+	} printf("\n ");
+	columnNum=1;
+	for(int i=0;i<size;i++){ // third row of column number digits
+		printf("%d ",columnNum%10);  
+		columnNum++;
+	} printf("\n");
+} 
