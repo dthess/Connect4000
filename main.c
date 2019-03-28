@@ -1,32 +1,36 @@
 #include "stdio.h"
 #include "stdlib.h"
+#include "stdbool.h"
 
 #include "playGame.h"
 
 /*
  * 
  */
-void playGame(int mode){		//mode 0 for pvp, 1 for cpu 
+void playGame(bool mode){		//mode 0 for pvp, 1 for cpu
 
 	char player1Name[50] = "PLayer 1";
 	char player2Name[50] = "Computer";
-	int boardSize=40; // max is 118 for my monitor
+	int boardSize=26; // max is 118 for my monitor
 
 	printLines();
-	printf("\t\tPlayer 1 enter first name\n\t\tYou will be X"); buffer();
-	//scanf("%s",player1Name);
+	printf("\t\tPlayer 1 enter name\n\t\tYou will be X"); buffer();
+	scanf("%50s",player1Name);
+	getLine();
 
 	printLines();
 	if(mode==0){
-		printf("\t\tPlayer 2 enter first name\n\t\tYou will be O"); buffer();
-		//scanf("%s",player2Name);
+		printf("\t\tPlayer 2 enter name\n\t\tYou will be O"); buffer();
+		scanf("%50s",player2Name);
+		getLine();
 	}
 
 	printLines();
-	int validSize=0;
+	bool validSize=0;
 	while (validSize==0){
 		printf("\n\t\tEnter Y board size length for a YxY board (4 minimum)"); buffer();
 		scanf("%d",&boardSize);
+		getLine();
 		if(boardSize<=3){
 			printf("\t\t\nInvalid board size\n\t\tTry again");
 		} else if(boardSize>=100){
@@ -35,6 +39,7 @@ void playGame(int mode){		//mode 0 for pvp, 1 for cpu
 			printf("\t\tCaution: Board sizes larger than 100 may run off screen (depending on the size of your monitor)\n"
 					"\t\tContinue anyway?\n\t\t1) Yes\n\t\t2) Try a different board size\n"); buffer();
 			scanf("%d",&playAnyway);
+			getLine();
 			if(playAnyway==1) validSize = 1;
 			else printLines();
 		} else{
@@ -62,12 +67,12 @@ void playGame(int mode){		//mode 0 for pvp, 1 for cpu
 		int gameState = 0;
 		char* playerName;
 		int msec=0;
-		int displayTime=0;
+		bool displayTime=0;
 		int computerColumn;
 
 		while(gameState==0){
 
-			printBoard(boardSize,board);
+			//printBoard(boardSize,board);
 
 			// display timer if computer just moved
 			if(displayTime==1&&turn==1){ 
@@ -115,7 +120,7 @@ void playGame(int mode){		//mode 0 for pvp, 1 for cpu
 		} // game over
 
 
-		printBoard(boardSize,board);
+		//printBoard(boardSize,board);
 
 
 		if(mode==1&& gameState==2){
@@ -128,6 +133,7 @@ void playGame(int mode){		//mode 0 for pvp, 1 for cpu
 			printf("\n\n\t\t%s WINS\n\n\t\tPlay again?\n\n\t\t1) yes\n\n\t\t2) no\n",playerName);
 		}
 		scanf("%d",&keepPlaying);
+		getLine();
 
 	}
 }
@@ -163,4 +169,3 @@ int main(){
 
 	return 0;
 }
-

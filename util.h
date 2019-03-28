@@ -28,7 +28,7 @@ void scoreboard(){
 /*
  * 
  */
-void printBoard(int size, int* arr[size]){
+void printBoard(int size, int* board[size]){
 
 	printLines();
 
@@ -69,9 +69,9 @@ void printBoard(int size, int* arr[size]){
 		//prints board values
 		
 		for(int j=0;j<size;j++){        
-			if(arr[i][j]==0) printf("_");     // empty space
-			if(arr[i][j]==1) printf("X");     // player 1 space
-			if(arr[i][j]==2) printf("O");     // player 2 space
+			if(board[i][j]==0) printf("_");     // empty space
+			if(board[i][j]==1) printf("X");     // player 1 space
+			if(board[i][j]==2) printf("O");     // player 2 space
 			printf("|");               // divider 
 		} printf("\n");
 	}

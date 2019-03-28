@@ -2,6 +2,7 @@
 #include "stdlib.h"
 #include "time.h"
 #include "string.h"
+#include "stdbool.h"
 
 #include "util.h"
 
@@ -10,6 +11,7 @@
  * borrowed from https://stackoverflow.com/questions/314401/how-to-read-a-line-from-the-console-in-c
  */
 char * getLine(void) {
+
 	char * line = malloc(100), * linep = line;
 	size_t lenmax = 100, len = lenmax;
 	int c;
@@ -18,11 +20,12 @@ char * getLine(void) {
 		return NULL;
 
 	while(1){
+
 		c = fgetc(stdin);
 		if(c == EOF)
 			break;
 
-		if(--len == 0) {
+		if(--len == 0){
 			len = lenmax;
 			char * linen = realloc(linep, lenmax *= 2);
 
@@ -43,7 +46,7 @@ char * getLine(void) {
 
 /*
  * displays the main menu
- * 
+ *
  * returns menu choice input from player
  */
 int menu(){
@@ -62,13 +65,13 @@ int menu(){
 }
 
 /*
- * 
+ *
  */
 void displayRules(){
-	
-	printf("\n\t\tDo you really need the rules to connect 4?\n\n\t\tThe objective is literally the name of the game"
-			"\n\n\t\tEnter 1 to return to menu\n\n"); buffer();
-	
+
+	printf("\n\t\tCome on it's pretty self-explanatory"
+			"\n\n\n\n\t\tEnter 1 to return to menu\n\n"); buffer();
+
 	// wait for 1 to be entered
 	while(1){
 		char* line = getLine();
@@ -83,136 +86,199 @@ void displayRules(){
 
 /*
  * determines whether X has won the game or not
- * 
+ *
  * takes the 2d board array and its size as arguments
- * takes the current gameState as argument so that the correct state 
+ * takes the current gameState as argument so that the correct state
  * can be returned in the event X is not the winner
- * 
+ *
  * checks horizontally, vertically, diagonally (\), and then diagonally again (/)
- * 
+ *
  * returns the same state value when X has not won, 1 when X has won
  */
-int checkXWin(int size, int* arr[size], int state){
+int checkXWin(int size, int* board[size], int state){
 
 	int winState = state;
 
+	int possibleMoves[size]; // stores row index for each column
+	for (int i=0;i<size;i++){
+		for (int j=size-1;j>=0;j--){
+			if(board[j][i]==0){
+				possibleMoves[i] = j; // open space found
+				break;
+			} else if(j==0){
+				possibleMoves[i] = -1; // column is full
+			}
+		}
+	}
+
 	//check horizontal
-	for(int i=0;i<size;i++)
-		for(int j=0;j<size-3;j++)
-			if(arr[i][j]==1)
-				if(arr[i][j+1]==1) // 1 in a row
-					if(arr[i][j+2]==1) // 2 in a row
-						if(arr[i][j+3]==1) // 3 in a row
-							winState = 1;
+	for(int k=0;k<size;k++){
+		int i=possibleMoves[k]+1;
+	//	printf("\n%d %d",k,i+1);
+		if(possibleMoves[k]!=-1&&i<size){
+	//		printf(" CHECKING horizontal %d %d",k,i+1);
+			for(int j=0;j<size-3;j++)
+				if(board[i][j]==1)
+					if(board[i][j+1]==1) // 1 in a row
+						if(board[i][j+2]==1) // 2 in a row
+							if(board[i][j+3]==1) // 3 in a row
+								winState = 1;
+		}
+	}
 
 	//check vertical
 	for(int i=0;i<size;i++)
-		for(int j=0;j<size-3;j++)
-			if(arr[j][i]==1)
-				if(arr[j+1][i]==1) // 1 in a row
-					if(arr[j+2][i]==1) // 2 in a row
-						if(arr[j+3][i]==1) // 3 in a row
-							winState = 1;
+		if(possibleMoves[i]<size-3&&possibleMoves[i]!=-1){
+			//printf("CHECKING vert %d\n",+1);
+			for(int j=0;j<size-3;j++)
+				if(board[j][i]==1)
+					if(board[j+1][i]==1) // 1 in a row
+						if(board[j+2][i]==1) // 2 in a row
+							if(board[j+3][i]==1) // 3 in a row
+								winState = 1;
+		}
 
 	//check diagonal '\'
-	for(int i=0;i<size-3;i++)
-		for(int j=0;j<size-3;j++)
-			if(arr[i][j]==1)
-				if(arr[i+1][j+1]==1) // 1 in a row
-					if(arr[i+2][j+2]==1) // 2 in a row
-						if(arr[i+3][j+3]==1) // 3 in a row
-							winState = 1;
+	for(int k=0;k<size-3;k++){
+		int i=possibleMoves[k]+1;
+	//	printf("\nright diagonal k: %d i: %d",k,i);
+		if(i<size-3&&i!=-1){
+		//	printf("CHECKING");
+			for(int j=0;j<size-3;j++)
+				if(board[i][j]==1)
+					if(board[i+1][j+1]==1) // 1 in a row
+						if(board[i+2][j+2]==1) // 2 in a row
+							if(board[i+3][j+3]==1) // 3 in a row
+								winState = 1;
+		}
+	}
 
 
 	//check diagonal '/'
-	for(int i=0;i<size-3;i++)
-		for(int j=3;j<size;j++)
-			if(arr[i][j]==1)
-				if(arr[i+1][j-1]==1) // 1 in a row
-					if(arr[i+2][j-2]==1) // 2 in a row
-						if(arr[i+3][j-3]==1) // 3 in a row
-							winState = 1;
+	for(int k=0;k<size-3;k++){
+		int i=possibleMoves[k]+1;
+	//	printf("\nleft diagonal k: %d i: %d",k,i);
+		if(i<size-3&&i!=-1){
+		//	printf("CHECKING");
+			for(int j=3;j<size;j++)
+				if(board[i][j]==1)
+					if(board[i+1][j-1]==1) // 1 in a row
+						if(board[i+2][j-2]==1) // 2 in a row
+							if(board[i+3][j-3]==1) // 3 in a row
+								winState = 1;
+		}
+	}
 
 	return winState;
 }
 
 /*
  * determines whether O has won the game or not
- * 
+ *
  * takes the 2d board array and its size as arguments
- * takes the current gameState as argument so that the correct state 
+ * takes the current gameState as argument so that the correct state
  * can be returned in the event O is not the winner
- * 
+ *
  * checks horizontally, vertically, diagonally (\), and then diagonally again (/)
- * 
+ *
  * returns the same state value when O has not won, 2 when O has won
  */
-int checkOWin(int size, int* arr[size], int state){ 
+int checkOWin(int size, int* board[size], int state){
 
 	int winState = state;
 
+	int possibleMoves[size];
+	for (int i=0;i<size;i++){
+		for (int j=size-1;j>=0;j--){
+			if(board[j][i]==0){
+				possibleMoves[i] = j; // open space found
+				break;
+			} else if(j==0){
+				possibleMoves[i] = -1; // column is full
+			}
+		}
+	}
+
 	//check horizontal
-	for(int i=0;i<size;i++)
-		for(int j=0;j<size-3;j++)
-			if(arr[i][j]==2)
-				if(arr[i][j+1]==2) // 1 in a row
-					if(arr[i][j+2]==2) // 2 in a row
-						if(arr[i][j+3]==2) // 3 in a row
-							winState = 2;
+	for(int k=0;k<size;k++){
+		int i=possibleMoves[k]+1;
+		if(possibleMoves[k]!=-1&&i<size){
+			for(int j=0;j<size-3;j++)
+				if(board[i][j]==2)
+					if(board[i][j+1]==2) // 1 in a row
+						if(board[i][j+2]==2) // 2 in a row
+							if(board[i][j+3]==2) // 3 in a row
+								winState = 2;
+		}
+	}
 
 	//check vertical
 	for(int i=0;i<size;i++)
-		for(int j=0;j<size-3;j++)
-			if(arr[j][i]==2)
-				if(arr[j+1][i]==2) // 1 in a row
-					if(arr[j+2][i]==2) // 2 in a row
-						if(arr[j+3][i]==2) // 3 in a row
-							winState = 2;
+		if(possibleMoves[i]<size-3&&possibleMoves[i]!=-1){
+			//printf("CHECKING vert %d\n",+1);
+			for(int j=0;j<size-3;j++)
+				if(board[j][i]==2)
+					if(board[j+1][i]==2) // 1 in a row
+						if(board[j+2][i]==2) // 2 in a row
+							if(board[j+3][i]==2) // 3 in a row
+								winState = 2;
+		}
 
 	//check diagonal '\'
-	for(int i=0;i<size-3;i++)
-		for(int j=0;j<size-3;j++)
-			if(arr[i][j]==2)
-				if(arr[i+1][j+1]==2) // 1 in a row
-					if(arr[i+2][j+2]==2) // 2 in a row
-						if(arr[i+3][j+3]==2) // 3 in a row
-							winState = 2;
-
+	for(int k=0;k<size-3;k++){
+		int i=possibleMoves[k]+1;
+		if(i<size-3&&i!=-1){
+			//printf("CHECKING diag %d\n",+1);
+			for(int j=0;j<size-3;j++)
+				if(board[i][j]==2)
+					if(board[i+1][j+1]==2) // 1 in a row
+						if(board[i+2][j+2]==2) // 2 in a row
+							if(board[i+3][j+3]==2) // 3 in a row
+								winState = 2;
+		}
+	}
 
 	//check diagonal '/'
-	for(int i=0;i<size-3;i++)
-		for(int j=3;j<size;j++)
-			if(arr[i][j]==2)
-				if(arr[i+1][j-1]==2) // 1 in a row
-					if(arr[i+2][j-2]==2) // 2 in a row
-						if(arr[i+3][j-3]==2) // 3 in a row
-							winState = 2;
+	for(int k=0;k<size-3;k++){
+		int i=possibleMoves[k]+1;
+		if(i<size-3&&i!=-1){
+			for(int j=3;j<size;j++)
+				if(board[i][j]==2)
+					if(board[i+1][j-1]==2) // 1 in a row
+						if(board[i+2][j-2]==2) // 2 in a row
+							if(board[i+3][j-3]==2) // 3 in a row
+								winState = 2;
+		}
+	}
 
 	return winState;
 }
 
 /*
- * determines if game is over due to tie 
- * (all spaces filled)
- * 
- * returns 0 for no tie, 3 for tie
+ * determines if game is over due to tie (all spaces filled and no winner)
+ *
+ * takes the 2d board array and its size as arguments
+ * takes the current gameState as argument so that the correct state
+ * can be returned in the event of no tie
+ *
+ * returns the same state value when no tie, 3 for a tie
  */
-int checkTie(int size, int* arr[size], int state){
+int checkTie(int size, int* board[size], int state){
 	int tieState = state;
 
+	// compares number of full columns to size of board
 	int fullColumns = 0;
 	for(int i=0;i<size;i++)
-		if(arr[0][i]!=0) fullColumns++;
-
+		if(board[0][i]!=0) fullColumns++;
 	if(fullColumns==size) tieState = 3;
 
 	return tieState;
 }
 
 /*
- * 
+ * gets user input
  */
-void playerMove(int size, int* arr[size],char* name, int turn){  // turn 1 for player1, 2 for player2
+void playerMove(int size, int* board[size],char* name, int turn){  // turn 1 for player1, 2 for player2
 
 	printf("\n\t\t%s's turn\n\t\tEnter column number\n\t\t",name);
 
@@ -220,14 +286,16 @@ void playerMove(int size, int* arr[size],char* name, int turn){  // turn 1 for p
 	int rowNum;
 
 	// make sure the column choice is valid (column isn't full)
-	int validChoice=0;
+	bool validChoice=0;
 	while(validChoice==0){
 
 		// make sure the column choice exists (column number is <= size)
-		int choiceExists = 0;
+		bool choiceExists = 0;
 		while(choiceExists == 0){
-			scanf("\n%d",&columnNum);
-			if(columnNum>0 && columnNum<=size){ 
+
+			scanf("%d",&columnNum);
+			getLine();
+			if(columnNum>0 && columnNum<=size){ // make sure column isn't too big or small
 				choiceExists = 1;
 			}  else {
 				printf("\n\t\tInvalid column number, try again");
@@ -235,12 +303,12 @@ void playerMove(int size, int* arr[size],char* name, int turn){  // turn 1 for p
 		}
 
 		// check if column is already full
-		if(arr[0][columnNum-1]!=0){
-			printf("\n\t\tColumn full, try again\n");    
+		if(board[0][columnNum-1]!=0){
+			printf("\n\t\tColumn full, try again\n");
 		} else { // otherwise find out what row to use
 			validChoice = 1;
 			for(int i=size-1;i>=0;i--){ // start at lowest row and move up
-				if(arr[i][columnNum-1]==0){
+				if(board[i][columnNum-1]==0){
 					rowNum = i;
 					break;
 				}
@@ -249,75 +317,127 @@ void playerMove(int size, int* arr[size],char* name, int turn){  // turn 1 for p
 	}
 
 	if(turn==1){
-		arr[rowNum][columnNum-1] = 1;
+		board[rowNum][columnNum-1] = 1;
 	} else {
-		arr[rowNum][columnNum-1] = 2;
+		board[rowNum][columnNum-1] = 2;
 	}
 }
 
 /*
- * returns comlumn computer moved in
+ * uses a series of steps to determine the next best move for the computer and moves there
+ *
+ * takes the 2d board array and its size as arguments
+ *
+ * returns the column the computer moved in
  */
-int computerMove(int size, int* arr[size]){
+int computerMove(int size, int* board[size]){
 
-	int column=-1;
+	int column, temp, temp2, i, j, winningMove;
 
-	// make list of all spaces computer can move
-	int rowArray[size];
-	for (int i=0;i<size;i++){
-		for (int j=size-1;j>=0;j--){
-			if(arr[j][i]==0){
-				rowArray[i] = j; // open space found
+	// STEP 1: make list of all spaces computer can move
+	int possibleMoves[size]; // array of row indexes
+	for (i=0;i<size;i++){
+		for (j=size-1;j>=0;j--){
+			if(board[j][i]==0){
+				possibleMoves[i] = j; // open space found
 				break;
 			} else if(j==0){
-				rowArray[i] = -1; // column is full
+				possibleMoves[i] = -1; // column is full
 			}
 		}
 	}
 
-	for(int i=0;i<size;i++)printf("%d ",rowArray[i]);
-
-	// check if each of those possible moves would win the game for the computer
-	for(int i=0;i<size;i++){
-		if(rowArray[i]!=-1){
-			int temp = arr[rowArray[i]][i];
-			arr[rowArray[i]][i] = 2;
-			int winningMove = checkOWin(size,arr,0);
+	// STEP 2: check if any one of those possible moves would win the game for the computer
+	for(i=0;i<size;i++){
+		if(possibleMoves[i]!=-1){
+			temp = board[possibleMoves[i]][i];
+			board[possibleMoves[i]][i] = 2;
+			winningMove = checkOWin(size,board,0);
 			if(winningMove==2){ // winning move found
 				column = i;
 				column++;
 				return column;
 			}
-			arr[rowArray[i]][i] = temp; // reset space
+			board[possibleMoves[i]][i] = temp; // if not, reset space
 		}
 	}
 
-	// check if each of those possible moves would win the game for the opponent (to block)
-	for(int i=0;i<size;i++){
-		if(rowArray[i]!=-1){
-			int temp = arr[rowArray[i]][i];
-			arr[rowArray[i]][i] = 1;
-			int winningMove = checkXWin(size,arr,0);
+	// STEP 3: check if any one of those possible moves would win the game for the opponent (to block)
+	for(i=0;i<size;i++){
+		if(possibleMoves[i]!=-1){
+			temp = board[possibleMoves[i]][i];
+			board[possibleMoves[i]][i] = 1;
+			winningMove = checkXWin(size,board,0);
 			if(winningMove==1){ // winning move for opponent found
-				arr[rowArray[i]][i] = 2;
+				board[possibleMoves[i]][i] = 2;
 				column = i;
 				column++;
 				return column;
 			}
-			arr[rowArray[i]][i] = temp; // reset space
+			board[possibleMoves[i]][i] = temp; // if not, reset space
 		}
 	}
 
-	// check for (0220)
+	// STEP 4: check if any two of those possible moves would win the game for the computer
+	for(i=0;i<size-3;i++){
+		for(j=1;j<4;j++){ // cycle offset values 1 through 3
+			temp = board[possibleMoves[i]][i];
+			temp2 = board[possibleMoves[i+j]][i+j];
+			board[possibleMoves[i]][i] = 2;
+			board[possibleMoves[i+j]][i+j] = 2;
+			winningMove = checkOWin(size,board,0); // check if its a winning pair of moves
+			if(winningMove == 2){ // if its a winning pair of moves, move in right space
+				board[possibleMoves[i]][i] = temp;  // reset the left space
+				column = i+j;
+				column++;
+				return column;
+			}
+			board[possibleMoves[i]][i] = temp; // reset the left space
+			board[possibleMoves[i+j]][i+j] = temp2; // reset the right space
+		}
+	}
 
-	// check for (0110)
 
+	// STEP 5: check if any two of those possible moves would win the game for the opponent (block one)
+	for(i=0;i<size-3;i++){
+		for(j=1;j<4;j++){ // cycle values 1 through 3
+			temp = board[possibleMoves[i]][i];
+			temp2 = board[possibleMoves[i+j]][i+j];
+			board[possibleMoves[i]][i] = 1;
+			board[possibleMoves[i+j]][i+j] = 1;
+			winningMove = checkXWin(size,board,0); // check if its a winning pair of moves
+			if(winningMove == 1){ // if its a winning pair of moves, move in the right space
+				board[possibleMoves[i]][i] = temp; // reset the left space
+				board[possibleMoves[i+j]][i+j] = 2;
+				column = i+j;
+				column++;
+				return column;
+			}
+			board[possibleMoves[i]][i] = temp; // reset the left space
+			board[possibleMoves[i+j]][i+j] = temp2; // reset the right space
+		}
+	}
 
-	// no best move could be found, move randomly
+	// STEP 6: just look for any O to play next to (mostly used in first few turns)
+	for(i=1;i<size-1;i++){
+		if(board[size-1][i]==2){
+			if(possibleMoves[i-1]==size-1 || possibleMoves[i-1]==size-2){ // looking to the left
+				board[possibleMoves[i-1]][i-1] = 2;
+				column = i;
+				return column;
+			} else if(possibleMoves[i+1]==size-1 || possibleMoves[i+1]==size-2){ // looking to the right
+				board[possibleMoves[i+1]][i+1] = 2;
+				column = i+2;
+				return column;
+			}
+		}
+	}
+
+	// no best move could be found, move randomly (usually only first turn)
 	while(1){
-		int random = clock()%size+1;
-		if(rowArray[random]!=-1){
-			arr[rowArray[random]][random] = 2;
+		int random = clock()%size;
+		if(possibleMoves[random]!=-1){
+			board[possibleMoves[random]][random] = 2;
 			column = random;
 			column++;
 			return column;
