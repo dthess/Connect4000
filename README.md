@@ -1,9 +1,13 @@
 # Connect4000
 cs201 project
 
+Video demonstration:
+https://drive.google.com/open?id=1LrYzQqsKRyhAY2agxFALNjqxn5VyM8ji
+
 Code borrowed for this project:
 
 https://stackoverflow.com/questions/17167949/how-to-use-timer-in-c
+
  int msec = 0, trigger = 10; /* 10ms */
  clock_t before = clock();
 
@@ -23,6 +27,7 @@ printf("Time taken %d seconds %d milliseconds (%d iterations)\n",
 
 
 https://stackoverflow.com/questions/314401/how-to-read-a-line-from-the-console-in:-c
+
 char * getLine(void) {
 	char * line = malloc(100), * linep = line;
 	size_t lenmax = 100, len = lenmax;
